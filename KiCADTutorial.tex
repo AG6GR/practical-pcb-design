@@ -18,10 +18,10 @@
 \begin{document}
 \maketitle
 \section{Introduction}
-The goal of this workshop is to give a quick guide to KiCad, from installation to schematic creation and PCB layout, via the design of a PCB for a basic 555 LED blinker circuit. \href{http://kicad-pcb.org/}{KiCad} is a powerful open source PCB design suite and a great tool for documenting circuits and producing high quality PCB's. This guide was written using version 4.0.6 of KiCad.
+The goal of this workshop is to give a quick guide to KiCad, from installation to schematic creation and PCB layout, via the design of a PCB for a basic 555 LED blinker circuit. \href{http://kicad-pcb.org/}{\textbf{KiCad}} is a powerful open source PCB design suite and a great tool for documenting circuits and producing high quality PCB's. This guide was written using version 4.0.6 of KiCad.
 
 \subsection{Circuit}
-The circuit we will be laying out in this workshop is the classic 555 timer LED blinker circuit. This circuit is taken directly from the Typical Application section of the \href{http://www.ti.com/lit/ds/symlink/lm555.pdf}{LM555 datasheet}, and simply blinks a LED on and off every few seconds.
+The circuit we will be laying out in this workshop is the classic 555 timer LED blinker circuit. This circuit is taken directly from the Typical Application section of the \href{http://www.ti.com/lit/ds/symlink/lm555.pdf}{\textbf{LM555 datasheet}}, and simply blinks a LED on and off every few seconds.
 
 \begin{figure}[H]
 \includegraphics[width=0.75\textwidth]{DatasheetSchematic}
@@ -30,7 +30,7 @@ The circuit we will be laying out in this workshop is the classic 555 timer LED 
 \end{figure}
 
 \subsection{Setup}
-KiCad is available for a wide range of operating systems. The download page is \href{http://kicad-pcb.org/download/}{here}. For Mac, the ``extras'' package is optional. 
+KiCad is available for a wide range of operating systems. The download page is \href{http://kicad-pcb.org/download/}{\textbf{here}}. For Mac, make sure to get the ``extras'' package as well. It contains a useful set of default components and footprints.
 
 \subsection{Overview}
 KiCad differs from other electronics design software in that it is extremely modular. Each section of the design process is divided into a distinct program. The KiCad getting started guide has this fantastic flowchart which is a great guide for figuring out what button to push next at any step of the design process.
@@ -230,7 +230,7 @@ The components have been connected, but we still need to define the values of th
 \caption{Edit Value Dialog}
 \end{figure}
 
-When you click OK, the label on the schematic should update with the correct value.
+When you click OK, the label on the schematic should update with the correct value. Once you've finished labeling all the resistors and capacitors, the schematic should look something like this:
 
 \begin{figure}[H]
 \includegraphics[width=0.75\textwidth]{AddedValues}
@@ -238,13 +238,101 @@ When you click OK, the label on the schematic should update with the correct val
 \caption{Schematic with Values Added}
 \end{figure}
 
-\subsection{Final Preparations}
+\subsection{Annotate Schematic}
+Now all the information from the datasheet has been entered, and we just have a few final steps before we can start the physical layout. First, we need to give unique ID numbers to all the components. Notice that up to now, every component has had a placeholder identifier like `R?' or `C?'. On the top menu bar, locate the button labeled with an op-amp and the numbers 123.
 
+\begin{figure}[H]
+\includegraphics{AnnotateSchematicButton}
+\centering
+\caption{Annotate Schematic Button}
+\end{figure}
+
+When you press it, a dialog will appear showing options on how to assign the identifiers. Choose the \textbf{`Use the entire schematic'} and \textbf{`Keep existing annotation'} options, but leave the rest at their default settings.
+
+\begin{figure}[H]
+\includegraphics[width=0.5\textwidth]{AnnotateSchematic}
+\centering
+\caption{Annotate Schematic Dialog}
+\end{figure}
+
+Click the \textbf{Annotate} button to run the numbering utility. Now you should see that every component has a unique number assigned to it.
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{SchematicAnnotated}
+\centering
+\caption{Annotated Schematic}
+\end{figure}
+
+\subsection{Assign Footprints}
+Now we need to tell the PCB editor what footprints to use for each component. Since most components come in many different variants with different shapes and sizes, KiCad doesn't explicitly assign a footprint (physical hole/pad pattern) to each schematic symbol. Instead, you can choose a different footprint depending on what component style you have on hand or decide to order. 
+
+Click the button two over from the annotate schematic button, with the op amp and IC shapes on it. This is the CVPcb utility for matching components to footprints.
+
+\begin{figure}[H]
+\includegraphics{CVPcbButton}
+\centering
+\caption{Footprint Matching Tool Button}
+\end{figure}
+
+A dialog should open up with three columns. On the left is a list of known component libraries. As you can see, footprints are organized by type of component. In the middle is a list of all the components in your schematic. On the right is a list of all the footprints within the currently selected library. 
+
+The rightmost three buttons in the menu bar represent filtering options. Usually, I check the middle one, which filters by number of pins, and the right one, which filters by the selected library. When you have a footprint selected, the icon with a magnifying glass opens a small window that shows you what that footprint actually looks like.
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{CVPcb}
+\centering
+\caption{Selecting a Footprint}
+\end{figure}
+
+Some of the libraries or footprints are labeled with \texttt{THT}, representing Through Hole, or \texttt{SMD}, representing Surface Mount Device. These are the two most general categories of component styles. Through hole components have wire leads as connections, which are threaded through holes in the PCB and soldered. Surface mount devices are soldered directly onto flat pads on one side of the PCB and tend to be much smaller than through hole components.
+
+Click on the first component in the list, likely a capacitor. Then select the \texttt{Capacitors\_THT} library on the left, and double click one of the footprints on the right to select it. 
+
+Assign footprints for each of your components. In practice, which footprint you select will depend on the dimensions and style of the actual component you will be using, but for this workshop I would recommend these footprints: 
+
+\begin{tabular}{|c|c|c|}
+\hline 
+\textbf{Component} & \textbf{Library} & \textbf{Footprint Name} \\ 
+\hline 
+Capacitor & \texttt{Capacitors\_THT} & \texttt{Capacitors\_THT:C\_Radial\_D5\_L6\_P2.5} \\ 
+\hline 
+Resistor & \texttt{Resistors\_THT} & \texttt{Resistors\_THT:Resistor\_Horizontal\_RM7mm} \\ 
+\hline 
+LED & \texttt{LEDs} & \texttt{LEDs:LED-5MM} \\ 
+\hline 
+LM555 & \texttt{Housings\_DIP} & \texttt{Housings\_DIP:DIP-8\_W7.62mm\_Socket} \\ 
+\hline 
+\end{tabular}
+
+When all the footprints have been assigned, save and close out of the dialog.
+
+\subsection{Generate Netlist}
+Now we have specified all the information we will need in the PCB editor. Click on the button labeled NET to generate the netlist.
+
+\begin{figure}[H]
+\includegraphics{NetlistButton}
+\centering
+\caption{Generate Netlist Button}
+\end{figure}
+
+This netlist file contains the schematic specifications in a compact format that the PCB editor can understand. Make sure PCBNew is the format selected, and hit the Generate button. Save the netlist in the same directory as the rest of the project.
+
+\begin{figure}[H]
+\includegraphics[width=0.5\textwidth]{NetlistDialog}
+\centering
+\caption{Generate Netlist Dialog}
+\end{figure}
+
+We are done with our schematic! Save and close out of the schematic editor.
 
 \section{PCB Layout}
+\subsection{Design Rules}
+\subsection{Component Placement}
+\subsection{Board Outline}
+\subsection{Routing}
+\subsection{Pours}
+\subsection{Export}
 \subsection{Tips and Tricks}
-
-\section{Export}
 
 \section{Extra: Creating New Components}
 \subsection{Schematic Symbol}
