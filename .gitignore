@@ -1,5 +1,13 @@
 # For PCBs designed using KiCad: http://www.kicad-pcb.org/
 
+.DS_Store
+
+# Latex Generated Files
+*.aux
+*.log
+*.out
+*.synctex.gz
+
 # Temporary files
 *.000
 *.bak
@@ -14,7 +22,3 @@ _autosave-*
 
 # Autorouter files (exported from Pcbnew)
 .dsn
-
-# Exported BOM files
-*.xml
-*.csv
