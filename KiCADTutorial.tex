@@ -326,17 +326,219 @@ This netlist file contains the schematic specifications in a compact format that
 We are done with our schematic! Save and close out of the schematic editor.
 
 \section{PCB Layout}
+Let's get this PCB started! Double click on the \texttt{kicad\_pcb} file or press the PCBNew button. You should see an empty canvas with a standard frame. The page settings do not copy over from the schematic, so open up \textbf{File $\rightarrow$ Page Settings} and update everything as needed.
+
+If you are on a laptop, remember to enable the ``Use Touchpad to Pan'' option, just as in the schematic editor. Also, if you are on a Macbook or other computer with a high resolution screen, you may find that the default editor engine runs rather slowly. If this is the case, select \textbf{View $\rightarrow$ Switch Canvas to OpenGL}. The OpenGL renderer runs much faster, but it does have a different, more Altium-like color scheme.
+
+Also note that on the left toolbar there are buttons for switching between inches and millimeters. Depending on what components you are using, it may be helpful to switch between the two while designing. For example, pin headers usually have $0.1$'' spacing, but some screw terminals have spacing measured in millimeters. For this workshop, select inches.
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{EmptyPCB}
+\centering
+\caption{Blank PCB Window}
+\end{figure}
+
 \subsection{Design Rules}
+Before we get started with layout, we need to define a set of design rules for our board. These rules are usually provided by the PCB manufacturer and provide constraints to make sure that all the geometry you draw on your PCB can actually be produced. If the smallest bit the manufacturer's PCB mill has is $1/16$'', you wouldn't want to be drawing $1/32$'' holes. Many manufacturers will provide specific instructions, for instance, see \textbf{\href{http://docs.oshpark.com/design-tools/kicad/kicad-design-rules/}{OSHPark}}.
+
+For today's workshop, we will be working with a set of design rules suitable for an \textbf{\href{https://othermachine.co/support/pcb/design-considerations/}{Othermill PCB mill}} like the one in the MAE shop. Open up \textbf{Design Rules $\rightarrow$ Design Rules} and select the \textbf{Global Design Rules} tab. Make sure that your units are inches! Quick note: the commonly used unit of ``mils'' refers to one-thousandth of an inch (ie 20 mils is $0.020$''). Fill out the design rules as show below:
+
+\begin{figure}[H]
+\includegraphics[width=0.6\textwidth]{GlobalDesignRules}
+\centering
+\caption{Global Design Rules}
+\end{figure}
+
+Next, switch to \textbf{Net Classes Editor} and update the Default net class dimensions as shown below:
+
+\begin{figure}[H]
+\includegraphics[width=0.6\textwidth]{NetClassRules}
+\centering
+\caption{Net Class Design Rules}
+\end{figure}
+
+Net classes allow you to assign different constraints to different parts of your circuit. For instance, it is often good to have extra wide traces for power supply traces, so you could define a special net class for all your supply connections.
+
+Next, let's set up our layers. Open \textbf{Design Rules $\rightarrow$ Layer Setup}. A PCB is made up of layers of copper and fiberglass laminated together, kind of like a sandwich. On the top left of the dialog, there is a dropdown box for selecting various presets. For the Othermill, choose \textbf{Two Layers, parts on Front only}. 
+
+You will often hear about ``2-layer'' or ``4-layer'' boards. This refers to the number of copper layers in the board, with more layers giving more flexibility but also being more expensive. As you can see, there are also many other layers. Masks and paste are used to define where component's pads are for automated soldering. The silkscreen layers let you add labels or artwork to the PCB. There are also a number of hidden drawing layers used to make notes or comments for the manufacturer. 
+
+Click OK when you are finished, and you should see your board stackup update in the right panel of the editor.
+
+\begin{figure}[H]
+\includegraphics[width=0.5\textwidth]{LayerSetup}
+\centering
+\caption{Layer Setup Dialog}
+\end{figure}
+
 \subsection{Component Placement}
+Now we can import the circuit layout from the netlist we generated from our schematic. Locate the import netlist button on the middle of the top toolbar. 
+
+\begin{figure}[H]
+\includegraphics{NetlistButton}
+\centering
+\caption{Import Netlist Button}
+\end{figure}
+
+Click the \textbf{Read Current Netlist} button, and you should see a list of components being imported into the PCB. After you close out of the dialog, you should see all the components in a giant pile in the middle of your PCB.
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{ImportedNetlist}
+\centering
+\caption{Components Imported from Netlist}
+\end{figure}
+
+Use the move and rotate commands just like in the schematic editor to separate out all the components. Make sure that no components are overlapping. Notice the faint grey lines running between the pads of the components. This is called the ``ratsnest.'' It shows all the connections from the schematic that we will have to make in the PCB. Try to rotate and move the components such that the lines are as short as possible, and connected pads are close together. Also, do not worry about the GND net, we will be doing something special for the ground connection later. 
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{ComponentPlacement}
+\centering
+\caption{Example Component Placement}
+\end{figure}
+
 \subsection{Board Outline}
+Now let us define the shape of our board. On the right layer selection panel, click on the row labeled \texttt{Edge.Cuts} with a Yellow icon. The blue arrow should swing down to show that it is selected. 
+
+\begin{figure}[H]
+\includegraphics{BorderSelection}
+\centering
+\caption{Selecting Edge.Cuts Layer}
+\end{figure}
+
+Next, select the Graphic line tool by pressing the button with the blue dashed line on the right toolbar.
+
+\begin{figure}[H]
+\includegraphics{GraphicLineButton}
+\centering
+\caption{Graphic Line Button}
+\end{figure}
+
+We want to draw a rectangle around our components as our board outline. Click to start drawing the board outline, then move your mouse to define line segments. Click to set corners, then double-click on the starting point to finish the drawing. Note that it is totally possible to have non-rectangular boards, but not all board manufacturers will support them.
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{BoardOutline}
+\centering
+\caption{Example Board Outline}
+\end{figure}
+
 \subsection{Routing}
+Now to draw the actual traces. We need to switch back to one of the copper layers, \texttt{F.Cu} or \texttt{B.Cu}. We are simulating designing a board for the Othermill, so we want to be routing on the back layer \texttt{B.Cu}. 
+
+This might seem counter-intuitive, but for the one-layer boards the Othermill creates, we want the copper on the opposite side as the components. If you were creating a board with surface-mount components, the traces will need to be on the same side as the components. 
+
+To enter routing mode, either click on the routing button, or press the default hotkey \textbf{`X'}. Then, click on a pad to start a trace. KiCAD will highlight the pads on the same net, so simply move your mouse over to nearby pads and click on them to create traces. You can press escape to exit out of the routing tool mid-trace. 
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{RoutingTrace}
+\centering
+\caption{Routing a Trace}
+\end{figure}
+
+The routing tool will do its best to make nice clean bends, but sometimes it can get confused or have trouble fitting through small gaps. In those situations, you can manually drag segments around by pressing \textbf{`D'} while hovering over a trace. Note that you have to be in routing mode for this to work! Also, for fine routing work you will likely have to adjust the grid spacing.
+
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{DragTrace}
+\centering
+\caption{Dragging a Trace}
+\end{figure}
+
+Practice routing traces by finishing the connections for the rest of the board, except for the GND connections. 
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{ExampleRouting}
+\centering
+\caption{Example Routing}
+\end{figure}
+
+\subsection{Vias}
+While this circuit is pretty simple, when routing more complicated circuits it is often the case that you need to have signals cross over each other, or switch layers. To do this, you can use vias. Vias are holes drilled through the entire board and plated with metal to allow signals to travel between layers. 
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{PlaceVia}
+\centering
+\caption{Placing a Via}
+\end{figure}
+
+To place a via, press \textbf{`V'} while routing a trace in routing mode. When you click, a via will be placed and the trace will switch to the other layer. Now you can safely cross any traces that were in the way and place another via to return to the original copper layer.
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{AfterVia}
+\centering
+\caption{Finished Via Bridge}
+\end{figure}
+
+For a one sided board, vias can be used to represent jumper wires that will be hand soldered after the board is milled. As long as the via is physically large enough to accommodate jumper wire, it can be helpful to map out these ad hoc connections on the top layer, even if they will not be actually milled out.
 \subsection{Pours}
+We've been treating the ground connections specially because instead of just creating traces for ground, it is typical to create a ground plane that fills in all the empty spaces in the board. This helps improve the electrical performance of the board by ensuring that all ground connections are kept at the same voltage level. 
+
+In addition, the capacitance between other traces and the ground plane can help to reduce the amount of noise running through your board. This is especially noticeable for 2 and 4 layer boards, where sensitive signal traces can be sandwiched between multiple ground planes, forming a box blocking out external signals.
+
+\begin{figure}[H]
+\includegraphics{PourButton}
+\centering
+\caption{Pour Tool Button}
+\end{figure}
+
+Find the pour tool on the right toolbar, just under the routing mode button. To use this tool, we draw a polygon around all the places we want the pour to cover, then KiCAD will programatically fill in the empty spaces with copper. Click on the top left corner of the board to start the pour. 
+
+A dialog should pop up to specify the properties of this pour. Select \texttt{GND} as the net to pour over and make sure the pour is on the bottom (\texttt{B.Cu}) layer. Most of the other settings are usually alright by default. 
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{PourOptions}
+\centering
+\caption{Pour Options Dialog}
+\end{figure}
+
+The one that might be useful to adjust is the ``Pad connection'' option. Since such a large solid piece of copper would be difficult to solder to, KiCAD will generate thermal relief patterns around pads. If you are making a homemade PCB on a mill, these thermal relief patterns can be fragile and difficult to mill. In those cases, it might be better to select the Solid option. 
+
+\begin{figure}[H]
+\includegraphics[width=0.5\textwidth]{ThermalRelief}
+\centering
+\caption{Thermal Relief Styles}
+\end{figure}
+
+Click OK to confirm the settings, then click on the corners of the board to define the pour region, similar to when we defined the board shape. Double click on the first corner to complete the pour. KiCAD will then automatically fill in the pour. If you later make changes to the board and need to update the pour, right click on the outline of the pour region and select the \textbf{Zones $\rightarrow$ Fill} option in the menu that appears. Or just press the \textbf{`B'} hotkey.
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{FinishPour}
+\centering
+\caption{Example Ground Pour}
+\end{figure}
+
 \subsection{Export}
-\subsection{Tips and Tricks}
+With that, the PCB is finished! Check that the bottom info bar shows 0 unconnected nets. You an also click the red ladybug in the top toolbar to run a design rule check (DRC), which will also check for clearance issues or footprint problems. 
 
-\section{Extra: Creating New Components}
-\subsection{Schematic Symbol}
+At this point, it is also a good idea to clean up the silkscreen layers and labels. Select the \texttt{F.Fab} Layer for value labels and \texttt{F.SilkS} for silkscreen labels. The general rule is to make sure that labels are close the component they describe, but more importantly that labels are unambiguous. 
 
-\subsection{PCB Footprint}
+If a component has an obvious orientation, orienting the component identifier the same way is a good idea. Another style is to place all identifiers facing in toward the center of the component, so that the bottom of the text faces toward the component it describes. There are many ways of doing this, but above all consistency and unambiguous identification are key.
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{SilkScreen}
+\centering
+\caption{Cleaned up Silkscreen}
+\end{figure}
+
+The final output step will depend on what your manufacturer wants. Most will have explicit instructions on their websites. The typical output format is called the Gerber format. We will walk though the Gerber export process for the Othermill. Select the proper layers and options as shown below. To keep things organized, also specify an output directory for the files. Click the \textbf{Plot} button to generate a set of Gerber outputs.
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{Gerbers}
+\centering
+\caption{Plot Dialog}
+\end{figure}
+
+Before you click close, click on the \textbf{Generate Drill File} option. The drill file is a text file that tells the machine where to place all the holes in the PCB and what size they need to be. Set the options as shown below, then click the \textbf{Drill File} button to generate the drill file.
+
+\begin{figure}[H]
+\includegraphics[width=0.75\textwidth]{DrillFile}
+\centering
+\caption{Drill File Dialog}
+\end{figure}
+
+These files can then be uploaded into the Otherplan mill control software. Don't forget to save before you exit!
+
+%\section{Extra: Creating New Components}
+%\subsection{Schematic Symbol}
+%\subsection{PCB Footprint}
 
 \end{document}
