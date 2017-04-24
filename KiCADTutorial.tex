@@ -16,7 +16,20 @@
 \author{Sunny He}
 
 \begin{document}
-\maketitle
+\begin{titlepage}
+	\centering
+	\vspace*{5cm}
+	{\huge\bfseries Practical PCB Design\par}
+	{\Large A KiCAD Walkthrough\par}
+	{\large \today\par}
+	\vspace{2cm}
+	{\includegraphics[width=0.5\textwidth]{TitleCard}\par}
+	\vfill
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
 \section{Introduction}
 The goal of this workshop is to give a quick guide to KiCad, from installation to schematic creation and PCB layout, via the design of a PCB for a basic 555 LED blinker circuit. \href{http://kicad-pcb.org/}{\textbf{KiCad}} is a powerful open source PCB design suite and a great tool for documenting circuits and producing high quality PCB's. This guide was written using version 4.0.6 of KiCad.
 
@@ -24,7 +37,7 @@ The goal of this workshop is to give a quick guide to KiCad, from installation t
 The circuit we will be laying out in this workshop is the classic 555 timer LED blinker circuit. This circuit is taken directly from the Typical Application section of the \href{http://www.ti.com/lit/ds/symlink/lm555.pdf}{\textbf{LM555 datasheet}}, and simply blinks a LED on and off every few seconds.
 
 \begin{figure}[H]
-\includegraphics[width=0.75\textwidth]{DatasheetSchematic}
+\includegraphics[width=0.5\textwidth]{DatasheetSchematic}
 \centering
 \caption{LM555 Example Circuit}
 \end{figure}
